@@ -87,11 +87,14 @@ public class GameScreen implements Screen {
 	}
 
 	private void respawnMonster() {
-		int r = random.nextInt(COLUMNS);
-		float x = respawnSpots[r];
+		float centerX = respawnSpots[random.nextInt(COLUMNS)];
 
 		Monster monster = new Monster(0, 0);
-		monster.setPosition(x - monster.getWidth() / 2, SCREEN_HEIGHT + monster.getHeight());
+		monster.setPosition(centerX - monster.getWidth() / 2, SCREEN_HEIGHT + monster.getHeight());
+		
+//		System.out.println("column width:" + SCREEN_WIDTH / COLUMNS);
+//		System.out.println("respawn point:" + x + ", width:" + monster.getWidth());
+//		System.out.println("position:" + (x - monster.getWidth() / 2) + "," + SCREEN_HEIGHT + monster.getHeight());
 
 		monsterGroup.addActorAt(0, monster);
 		
@@ -108,7 +111,6 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void pause() {
-
 	}
 
 	@Override
