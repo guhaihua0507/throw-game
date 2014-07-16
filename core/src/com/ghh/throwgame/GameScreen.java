@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
+import com.ghh.throwgame.m.Slime;
+import com.ghh.throwgame.m.StoneMan;
 
 public class GameScreen implements Screen {
 	private final static float	SCREEN_WIDTH			= 480f;
@@ -89,13 +91,15 @@ public class GameScreen implements Screen {
 	private void respawnMonster() {
 		float centerX = respawnSpots[random.nextInt(COLUMNS)];
 
-		Monster monster = new Monster(0, 0);
+		Monster monster = null;
+		if (random.nextInt(2) == 0) {
+			monster = new Slime(game.manager);
+		} else {
+			monster = new StoneMan(game.manager);
+		}
+		
 		monster.setPosition(centerX - monster.getWidth() / 2, SCREEN_HEIGHT + monster.getHeight());
 		
-//		System.out.println("column width:" + SCREEN_WIDTH / COLUMNS);
-//		System.out.println("respawn point:" + x + ", width:" + monster.getWidth());
-//		System.out.println("position:" + (x - monster.getWidth() / 2) + "," + SCREEN_HEIGHT + monster.getHeight());
-
 		monsterGroup.addActorAt(0, monster);
 		
 		lastMonsterCreateTime = TimeUtils.millis();
