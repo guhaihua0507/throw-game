@@ -29,7 +29,7 @@ public class LoadingScreen implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		if (game.manager.update()) {
 			game.startGame();
-			this.dispose();
+//			this.dispose();
 		} else {
 			batch.begin();
 			String progress = (int)game.manager.getProgress() * 100 + "%";
@@ -40,16 +40,19 @@ public class LoadingScreen implements Screen {
 	}
 
 	@Override
+	public void hide() {
+		System.out.println("-------------------hide Loading screen");
+		dispose();
+	}
+
+	@Override
 	public void dispose() {
 		font.dispose();
+		System.out.println("-------------------dispose Loading screen");
 	}
 
 	@Override
 	public void resize(int width, int height) {
-	}
-
-	@Override
-	public void hide() {
 	}
 
 	@Override

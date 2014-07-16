@@ -4,11 +4,14 @@ import java.util.Iterator;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -47,6 +50,18 @@ public class GameScreen implements Screen {
 	public void show() {
 		stage = new Stage(new ScalingViewport(Scaling.fill, SCREEN_WIDTH, SCREEN_HEIGHT, new OrthographicCamera()));
 		Gdx.input.setInputProcessor(stage);
+		stage.addListener(new InputListener() {
+			@Override
+			public boolean keyUp(InputEvent event, int keycode) {
+				if (keycode == Keys.BACK) {
+					System.out.println("=============back key pressed");
+					game.exitGame();
+				}
+				return false;
+//				return super.keyUp(event, keycode);
+			}
+		});
+		
 		stage.addActor(monsterGroup);
 		stage.addActor(weaponGroup);
 	}
@@ -106,11 +121,17 @@ public class GameScreen implements Screen {
 	}
 
 	@Override
-	public void resize(int width, int height) {
+	public void hide() {
+		System.out.println("-------------------hide game screen");;
 	}
 
 	@Override
-	public void hide() {
+	public void dispose() {
+		System.out.println("-------------------dispose game screen");;
+	}
+	
+	@Override
+	public void resize(int width, int height) {
 	}
 
 	@Override
@@ -119,9 +140,5 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void resume() {
-	}
-
-	@Override
-	public void dispose() {
 	}
 }
