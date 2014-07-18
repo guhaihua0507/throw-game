@@ -24,29 +24,44 @@ public class ThrowGame extends Game {
 
 	public void startGame() {
 		Gdx.input.setCatchBackKey(true);
-		if (manager.getProgress() < 1) {
-			loadScreen = new LoadingScreen(this);
-			setScreen(loadScreen);
-		} else {
-			gameScreen = new GameScreen(this);
-			setScreen(gameScreen);
-		}
+		gameScreen = new GameScreen(this);
+		setScreen(gameScreen);
 	}
 
-	public void exitGame() {
-		setScreen(startScreen);
-		Gdx.input.setCatchBackKey(false);
+	public void loadGame() {
+		Gdx.input.setCatchBackKey(true);
+		loadScreen = new LoadingScreen(this);
+		setScreen(loadScreen);
 	}
-	
+
+	public void gotoHome() {
+		Gdx.input.setCatchBackKey(false);
+		setScreen(startScreen);
+	}
+
 	public void loadAssets() {
 		manager.load("m/slime.png", Texture.class);
-		manager.load("m/1211.png", Texture.class);
+		manager.load("m/1.png", Texture.class);
+		manager.load("m/2.png", Texture.class);
+		manager.load("m/3.png", Texture.class);
+		manager.load("m/4.png", Texture.class);
+		manager.load("m/5.png", Texture.class);
+		manager.load("m/6.png", Texture.class);
+		manager.load("m/7.png", Texture.class);
+		manager.load("m/8.png", Texture.class);
 		manager.load("bgsound.mp3", Music.class);
 	}
 
 	public void unloadAssets() {
 		manager.unload("m/slime.png");
-		manager.unload("m/1211.png");
+		manager.unload("m/1.png");
+		manager.unload("m/2.png");
+		manager.unload("m/3.png");
+		manager.unload("m/4.png");
+		manager.unload("m/5.png");
+		manager.unload("m/6.png");
+		manager.unload("m/7.png");
+		manager.unload("m/8.png");
 		manager.unload("bgsound.mp3");
 	}
 
@@ -57,8 +72,8 @@ public class ThrowGame extends Game {
 
 	@Override
 	public void dispose() {
-		System.out.println("===============dispose game");
 		unloadAssets();
+		manager.dispose();
 		super.dispose();
 	}
 }

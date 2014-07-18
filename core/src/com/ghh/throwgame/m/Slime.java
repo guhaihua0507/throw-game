@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.ghh.throwgame.Monster;
 
 public class Slime extends Monster {
-	protected AssetManager	assetManager;
+	private AssetManager	assetManager;
 
 	private float			width			= 64f;
 	private float			height			= 64f;

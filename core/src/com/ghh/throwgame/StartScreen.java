@@ -32,13 +32,13 @@ public class StartScreen implements Screen {
 		
 		startButton = new Texture("button-start.png");
 		image = new Image(startButton);
+		image.setBounds(SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 + 100, 100, 100);
 		image.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				StartScreen.this.game.startGame();
+				StartScreen.this.game.loadGame();
 			}
 		});
-		image.setBounds(SCREEN_WIDTH / 2 - 50, SCREEN_HEIGHT / 2 + 100, 100, 100);
 		
 		stage.addActor(image);
 		Gdx.input.setInputProcessor(stage);
@@ -46,7 +46,7 @@ public class StartScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(8f / 255f, 125f / 255f, 37f / 255f, 0.5f);
+		Gdx.gl.glClearColor(8f / 255f, 125f / 255f, 37f / 255f, 0f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		stage.draw();
 	}

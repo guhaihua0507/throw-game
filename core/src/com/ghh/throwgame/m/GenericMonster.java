@@ -11,26 +11,30 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.ghh.throwgame.Monster;
 
-public class StoneMan extends Monster {
-	protected AssetManager	assetManager;
+public class GenericMonster extends Monster {
+	private AssetManager	assetManager;
+	private String			assetName;
 
-	private float			width			= 64f;
-	private float			height			= 64f;
-	private float			life			= 150f;
-	private float			speed			= 120f;
-	
+	private float			width	= 80f;
+	private float			height	= 80f;
+	private float			life;
+	private float			speed;
+
 	private Animation		walkAnimation;
 	private Animation		attackAnimation;
 	private Animation		destroyAnimation;
 
-	public StoneMan(AssetManager assetManager) {
+	public GenericMonster(AssetManager assetManager, String assetName, float life, float speed) {
 		this.assetManager = assetManager;
+		this.assetName = assetName;
+		this.life = life;
+		this.speed = speed;
 		this.setBounds(0, 0, width, height);
 		init();
 	}
 
 	private void init() {
-		Texture texture = assetManager.get("m/1211.png");
+		Texture texture = assetManager.get(assetName);
 		TextureRegion[][] splits = TextureRegion.split(texture, 64, 64);
 
 		// walk animation
@@ -50,7 +54,7 @@ public class StoneMan extends Monster {
 		this.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				StoneMan.this.attacked();
+				GenericMonster.this.attacked();
 			}
 		});
 	}

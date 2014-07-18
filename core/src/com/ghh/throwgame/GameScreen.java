@@ -16,18 +16,17 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.ghh.throwgame.m.Slime;
-import com.ghh.throwgame.m.StoneMan;
 
 public class GameScreen implements Screen {
-	private final static float	SCREEN_WIDTH			= 480f;
-	private final static float	SCREEN_HEIGHT			= 800f;
+	private final static float	WIDTH					= 480f;
+	private final static float	HEIGHT					= 768f;
 	private final static int	COLUMNS					= 5;
 
 	private ThrowGame			game;
+	private MonsterFactory		mFactory;
 
 	private float[]				respawnSpots;
-	
+
 	private Stage				stage;
 	private Group				monsterGroup			= new Group();
 	private Group				weaponGroup				= new Group();
@@ -38,9 +37,10 @@ public class GameScreen implements Screen {
 
 	public GameScreen(ThrowGame game) {
 		this.game = game;
-
+		mFactory = new MonsterFactory(game.manager);
+		
 		respawnSpots = new float[COLUMNS];
-		float cWidth = SCREEN_WIDTH / COLUMNS;
+		float cWidth = WIDTH / COLUMNS;
 		for (int i = 0; i < COLUMNS; i++) {
 			respawnSpots[i] = cWidth / 2 + cWidth * i;
 		}
@@ -48,27 +48,26 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void show() {
-		stage = new Stage(new ScalingViewport(Scaling.fill, SCREEN_WIDTH, SCREEN_HEIGHT, new OrthographicCamera()));
+		stage = new Stage(new ScalingViewport(Scaling.stretch, WIDTH, HEIGHT, new OrthographicCamera()));
+
 		Gdx.input.setInputProcessor(stage);
 		stage.addListener(new InputListener() {
 			@Override
 			public boolean keyUp(InputEvent event, int keycode) {
 				if (keycode == Keys.BACK) {
-					System.out.println("=============back key pressed");
-					game.exitGame();
+					game.gotoHome();
 				}
-				return false;
-//				return super.keyUp(event, keycode);
+				return true;
 			}
 		});
-		
+
 		stage.addActor(monsterGroup);
 		stage.addActor(weaponGroup);
 	}
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(8f / 255f, 138f / 255f, 8f / 255f, 0.2f);
+		Gdx.gl.glClearColor(8f / 255f, 138f / 255f, 8f / 255f, 0f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		stage.act();
@@ -87,17 +86,13 @@ public class GameScreen implements Screen {
 				}
 			}
 		}
-		
-		/*itr = weaponGroup.getChildren().iterator();
-		while (itr.hasNext()) {
-			Actor a = itr.next();
-			if (a instanceof Monster) {
-				if (((Monster) a).isDestroyed()) {
-					weaponGroup.removeActor(a);
-				}
-			}
-		}*/
-		
+
+		/*
+		 * itr = weaponGroup.getChildren().iterator(); while (itr.hasNext()) {
+		 * Actor a = itr.next(); if (a instanceof Monster) { if (((Monster)
+		 * a).isDestroyed()) { weaponGroup.removeActor(a); } } }
+		 */
+
 		if (lastMonsterCreateTime == 0 || (TimeUtils.millis() - lastMonsterCreateTime) >= monsterInterval) {
 			respawnMonster();
 		}
@@ -106,30 +101,26 @@ public class GameScreen implements Screen {
 	private void respawnMonster() {
 		float centerX = respawnSpots[random.nextInt(COLUMNS)];
 
-		Monster monster = null;
-		if (random.nextInt(2) == 0) {
-			monster = new Slime(game.manager);
-		} else {
-			monster = new StoneMan(game.manager);
-		}
-		
-		monster.setPosition(centerX - monster.getWidth() / 2, SCREEN_HEIGHT + monster.getHeight());
-		
+		Monster monster = mFactory.create();
+
+		monster.setPosition(centerX - monster.getWidth() / 2, HEIGHT + monster.getHeight());
+
 		monsterGroup.addActorAt(0, monster);
-		
+
 		lastMonsterCreateTime = TimeUtils.millis();
 	}
 
 	@Override
 	public void hide() {
-		System.out.println("-------------------hide game screen");;
+		System.out.println("-------------------hide game screen");
 	}
 
 	@Override
 	public void dispose() {
-		System.out.println("-------------------dispose game screen");;
+		System.out.println("-------------------dispose game screen");
+		stage.dispose();
 	}
-	
+
 	@Override
 	public void resize(int width, int height) {
 	}
