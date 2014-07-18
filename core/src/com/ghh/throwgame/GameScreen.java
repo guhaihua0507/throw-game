@@ -140,7 +140,6 @@ public class GameScreen implements Screen {
 			return;
 		}
 		Rectangle rcw = new Rectangle(wp.getX() + 5, wp.getY() + 5, wp.getWidth() - 10, wp.getHeight() - 10);
-		System.out.println(wp.getWidth() + ":" + wp.getHeight());
 		Iterator<Actor> it = monsterGroup.getChildren().iterator();
 		while (it.hasNext()) {
 			Actor a = it.next();
