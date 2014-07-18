@@ -22,6 +22,9 @@ public class Weapon extends Actor {
 	private AssetManager	assetManager;
 	private String			assetName;
 
+	private float			eventWidth	= 100f;
+	private float			eventHeight	= 100f;
+
 	private float			width		= 60f;
 	private float			height		= 60f;
 	private float			power		= 0f;
@@ -42,7 +45,7 @@ public class Weapon extends Actor {
 		this.assetManager = assetManager;
 		this.assetName = assetName;
 		this.power = power;
-		setBounds(0, 0, width, height);
+		setBounds(0, 0, eventWidth, eventHeight);
 		init();
 	}
 
@@ -68,6 +71,11 @@ public class Weapon extends Actor {
 			@Override
 			public void fling(InputEvent event, float velocityX, float velocityY, int button) {
 				if (state == WeaponState.idle) {
+					float centerX = getCenterX();
+					float centerY = getCenterY();
+					setWidth(width);
+					setHeight(height);
+					setCenterPosition(centerX, centerY);
 					setSpeed(velocityX, velocityY);
 					state = WeaponState.fling;
 				}
@@ -77,7 +85,7 @@ public class Weapon extends Actor {
 
 	private void update() {
 		if (state == WeaponState.attacking) {
-			if(attackingAnimation.isAnimationFinished(stateTime)) {
+			if (attackingAnimation.isAnimationFinished(stateTime)) {
 				stateTime = 0;
 				state = WeaponState.destroying;
 				addAction(Actions.fadeOut(0.4f));
@@ -89,13 +97,13 @@ public class Weapon extends Actor {
 				isDestroyed = true;
 			}
 		}
-		
+
 		if (state == WeaponState.fling) {
 			float deltaTime = Gdx.graphics.getDeltaTime();
 			setX(getX() + (speedx * deltaTime));
 			setY(getY() + (speedy * deltaTime));
 		}
-		
+
 		updateFrame();
 	}
 
@@ -126,7 +134,7 @@ public class Weapon extends Actor {
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		batch.setColor(batch.getColor().a, batch.getColor().g, batch.getColor().b, this.getColor().a);
-		batch.draw(currentFrame, this.getX(), this.getY(), this.getCenterX(), this.getCenterY(), this.getWidth(), this.getHeight(), getScaleX(), getScaleY(), 0f);
+		batch.draw(currentFrame, this.getX(), this.getY(), this.getCenterX(), this.getCenterY(), width, height, getScaleX(), getScaleY(), 0f);
 	}
 
 	private void setSpeed(float speedx, float speedy) {
@@ -149,15 +157,15 @@ public class Weapon extends Actor {
 	private TextureRegion getDestroyingFrame() {
 		return destroyingAnimation.getKeyFrame(stateTime);
 	}
-	
+
 	public boolean isDestroyed() {
 		return isDestroyed;
 	}
-	
+
 	public boolean isIdle() {
 		return state == WeaponState.idle;
 	}
-	
+
 	public boolean isFling() {
 		return state == WeaponState.fling;
 	}

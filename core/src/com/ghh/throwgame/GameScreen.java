@@ -140,6 +140,7 @@ public class GameScreen implements Screen {
 			return;
 		}
 		Rectangle rcw = new Rectangle(wp.getX() + 5, wp.getY() + 5, wp.getWidth() - 10, wp.getHeight() - 10);
+		System.out.println(wp.getWidth() + ":" + wp.getHeight());
 		Iterator<Actor> it = monsterGroup.getChildren().iterator();
 		while (it.hasNext()) {
 			Actor a = it.next();
@@ -154,6 +155,7 @@ public class GameScreen implements Screen {
 			if (rcw.overlaps(rcm)) {
 				wp.attack(ms);
 				ms.attacked(wp);
+				break;
 			}
 		}
 	}
@@ -172,7 +174,7 @@ public class GameScreen implements Screen {
 
 	private void respawnWeapon() {
 		currentWeapon = weaponFactory.create();
-		currentWeapon.setPosition(WIDTH / 2 - currentWeapon.getCenterX(), 150 - currentWeapon.getCenterY());
+		currentWeapon.setCenterPosition(WIDTH / 2, 150f);
 		weaponGroup.addActor(currentWeapon);
 	}
 
