@@ -40,6 +40,7 @@ public class ThrowGame extends Game {
 	}
 
 	public void loadAssets() {
+		/*Monster texture*/
 		manager.load("m/slime.png", Texture.class);
 		manager.load("m/1.png", Texture.class);
 		manager.load("m/2.png", Texture.class);
@@ -49,10 +50,17 @@ public class ThrowGame extends Game {
 		manager.load("m/6.png", Texture.class);
 		manager.load("m/7.png", Texture.class);
 		manager.load("m/8.png", Texture.class);
+		
+		/*Weapons texture*/
+		manager.load("w/w1.png", Texture.class);
+		manager.load("w/w2.png", Texture.class);
+		manager.load("w/w3.png", Texture.class);
+		
 		manager.load("bgsound.mp3", Music.class);
 	}
 
 	public void unloadAssets() {
+		/*Monster texture*/
 		manager.unload("m/slime.png");
 		manager.unload("m/1.png");
 		manager.unload("m/2.png");
@@ -62,6 +70,12 @@ public class ThrowGame extends Game {
 		manager.unload("m/6.png");
 		manager.unload("m/7.png");
 		manager.unload("m/8.png");
+		
+		/*Weapon texture*/
+		manager.unload("w/w1.png");
+		manager.unload("w/w2.png");
+		manager.unload("w/w3.png");
+		
 		manager.unload("bgsound.mp3");
 	}
 

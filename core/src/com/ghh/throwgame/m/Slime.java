@@ -5,10 +5,8 @@ import java.util.Arrays;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.ghh.throwgame.Monster;
 
 public class Slime extends Monster {
@@ -45,14 +43,6 @@ public class Slime extends Monster {
 		// dying animation
 		frames = Arrays.copyOfRange(splits[1], 2, 4);
 		destroyAnimation = new Animation(0.25f, frames);
-
-		// TODO Remove this section
-		this.addListener(new ClickListener() {
-			@Override
-			public void clicked(InputEvent event, float x, float y) {
-				Slime.this.attacked();
-			}
-		});
 	}
 
 	@Override

@@ -7,11 +7,11 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 public abstract class Monster extends Actor {
-	public static enum STATUS {
+	public static enum MonsterState {
 		WALKING, ATTACKED, DESTROYING
 	}
 
-	protected STATUS		state			= STATUS.WALKING;
+	protected MonsterState	state			= MonsterState.WALKING;
 	protected float			stateTime		= 0f;
 	protected boolean		isDestroyed		= false;
 
@@ -20,30 +20,26 @@ public abstract class Monster extends Actor {
 	// private ScaleToAction scaleAction = Actions.scaleTo(0f, 0f, 0.2f);
 
 	protected void update() {
-		if (state == STATUS.ATTACKED) {
+		if (state == MonsterState.ATTACKED) {
 			if (isAttackingFinished(stateTime)) {
-				state = STATUS.WALKING;
+				state = MonsterState.WALKING;
 				stateTime = 0f;
 			}
 
 			if (getLife() <= 0) {
-				state = STATUS.DESTROYING;
+				state = MonsterState.DESTROYING;
 				stateTime = 0f;
 				// this.addAction(scaleAction);
 				addAction(Actions.fadeOut(0.5f));
 			}
 		}
 
-		if (state == STATUS.DESTROYING && isDestroyingFinished(stateTime)) {
-			this.destroy();
+		if (state == MonsterState.DESTROYING && isDestroyingFinished(stateTime)) {
+			isDestroyed = true;
 		}
 
-		if (state == STATUS.WALKING) {
+		if (state == MonsterState.WALKING) {
 			walk();
-		}
-
-		if (this.getY() <= 0 - this.getHeight()) {
-			this.destroy();
 		}
 
 		updateFrame();
@@ -59,7 +55,8 @@ public abstract class Monster extends Actor {
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		batch.setColor(batch.getColor().a, batch.getColor().g, batch.getColor().b, this.getColor().a);
-		batch.draw(currentFrame, this.getX(), this.getY(), this.getWidth() / 2, this.getHeight() / 2, this.getWidth(), this.getHeight(), getScaleX(), getScaleY(), 0f);
+		batch.draw(currentFrame, this.getX(), this.getY(), this.getWidth() / 2, this.getHeight() / 2, this.getWidth(),
+				this.getHeight(), getScaleX(), getScaleY(), 0f);
 	}
 
 	protected void walk() {
@@ -67,12 +64,10 @@ public abstract class Monster extends Actor {
 		this.setY(y);
 	}
 
-	public void attacked() {
-		if (getLife() > 0) {
-			this.state = STATUS.ATTACKED;
-			this.stateTime = 0;
-			updateLife(20); // TODO
-		}
+	public void attacked(Weapon wp) {
+		this.state = MonsterState.ATTACKED;
+		this.stateTime = 0;
+		updateLife(wp.getPower());
 	}
 
 	private void updateFrame() {
@@ -90,7 +85,11 @@ public abstract class Monster extends Actor {
 			break;
 		}
 	}
-
+	
+	public boolean isAlive() {
+		return getLife() > 0;
+	}
+	
 	protected abstract float getLife();
 
 	protected abstract void updateLife(float lf);
@@ -106,10 +105,6 @@ public abstract class Monster extends Actor {
 	protected abstract boolean isAttackingFinished(float stateTime);
 
 	protected abstract boolean isDestroyingFinished(float stateTime);
-
-	protected void destroy() {
-		isDestroyed = true;
-	}
 
 	public boolean isDestroyed() {
 		return isDestroyed;

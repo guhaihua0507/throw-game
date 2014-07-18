@@ -8,6 +8,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -23,11 +24,13 @@ public class GameScreen implements Screen {
 	private final static int	COLUMNS					= 5;
 
 	private ThrowGame			game;
-	private MonsterFactory		mFactory;
+	private MonsterFactory		monsterFactory;
+	private WeaponFactory		weaponFactory;
 
 	private float[]				respawnSpots;
 
 	private Stage				stage;
+	private Rectangle			glViewPoint;
 	private Group				monsterGroup			= new Group();
 	private Group				weaponGroup				= new Group();
 
@@ -35,10 +38,13 @@ public class GameScreen implements Screen {
 	private long				monsterInterval			= 1500;
 	private long				lastMonsterCreateTime	= 0;
 
+	private Weapon				currentWeapon;
+
 	public GameScreen(ThrowGame game) {
 		this.game = game;
-		mFactory = new MonsterFactory(game.manager);
-		
+		monsterFactory = new MonsterFactory(game.manager);
+		weaponFactory = new WeaponFactory(game.manager);
+
 		respawnSpots = new float[COLUMNS];
 		float cWidth = WIDTH / COLUMNS;
 		for (int i = 0; i < COLUMNS; i++) {
@@ -48,8 +54,9 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void show() {
-		stage = new Stage(new ScalingViewport(Scaling.stretch, WIDTH, HEIGHT, new OrthographicCamera()));
+		glViewPoint = new Rectangle(0, 0, WIDTH, HEIGHT);
 
+		stage = new Stage(new ScalingViewport(Scaling.stretch, WIDTH, HEIGHT, new OrthographicCamera()));
 		Gdx.input.setInputProcessor(stage);
 		stage.addListener(new InputListener() {
 			@Override
@@ -63,6 +70,8 @@ public class GameScreen implements Screen {
 
 		stage.addActor(monsterGroup);
 		stage.addActor(weaponGroup);
+
+		respawnWeapon();
 	}
 
 	@Override
@@ -77,31 +86,82 @@ public class GameScreen implements Screen {
 	}
 
 	private void update() {
+		/*
+		 * update monsters
+		 */
 		Iterator<Actor> itr = monsterGroup.getChildren().iterator();
 		while (itr.hasNext()) {
 			Actor a = itr.next();
 			if (a instanceof Monster) {
-				if (((Monster) a).isDestroyed()) {
+				Monster ms = (Monster) a;
+				if (ms.isDestroyed()) {
 					monsterGroup.removeActor(a);
+				} else {
+					if (ms.getY() + ms.getHeight() < 0) {
+						monsterGroup.removeActor(ms);
+					}
 				}
 			}
 		}
 
-		/*
-		 * itr = weaponGroup.getChildren().iterator(); while (itr.hasNext()) {
-		 * Actor a = itr.next(); if (a instanceof Monster) { if (((Monster)
-		 * a).isDestroyed()) { weaponGroup.removeActor(a); } } }
-		 */
-
 		if (lastMonsterCreateTime == 0 || (TimeUtils.millis() - lastMonsterCreateTime) >= monsterInterval) {
 			respawnMonster();
+		}
+
+		/*
+		 * update weapons
+		 */
+		itr = weaponGroup.getChildren().iterator();
+		while (itr.hasNext()) {
+			Actor a = itr.next();
+			if (a instanceof Weapon) {
+				Weapon wp = (Weapon) a;
+
+				checkIfHitMonster(wp);
+
+				if (wp.isDestroyed()) {
+					weaponGroup.removeActor(wp);
+				} else {
+					Rectangle rc = new Rectangle(wp.getX(), wp.getY(), wp.getWidth(), wp.getHeight());
+					if (!glViewPoint.overlaps(rc)) {
+						weaponGroup.removeActor(wp);
+					}
+				}
+			}
+		}
+
+		if (!currentWeapon.isIdle()) {
+			respawnWeapon();
+		}
+	}
+
+	private void checkIfHitMonster(Weapon wp) {
+		if (!wp.isFling()) {
+			return;
+		}
+		Rectangle rcw = new Rectangle(wp.getX() + 5, wp.getY() + 5, wp.getWidth() - 10, wp.getHeight() - 10);
+		Iterator<Actor> it = monsterGroup.getChildren().iterator();
+		while (it.hasNext()) {
+			Actor a = it.next();
+			if (!(a instanceof Monster)) {
+				continue;
+			}
+			Monster ms = (Monster) a;
+			if (!ms.isAlive()) {
+				continue;
+			}
+			Rectangle rcm = new Rectangle(ms.getX(), ms.getY(), ms.getWidth(), ms.getHeight());
+			if (rcw.overlaps(rcm)) {
+				wp.attack(ms);
+				ms.attacked(wp);
+			}
 		}
 	}
 
 	private void respawnMonster() {
 		float centerX = respawnSpots[random.nextInt(COLUMNS)];
 
-		Monster monster = mFactory.create();
+		Monster monster = monsterFactory.create();
 
 		monster.setPosition(centerX - monster.getWidth() / 2, HEIGHT + monster.getHeight());
 
@@ -110,15 +170,20 @@ public class GameScreen implements Screen {
 		lastMonsterCreateTime = TimeUtils.millis();
 	}
 
-	@Override
-	public void hide() {
-		System.out.println("-------------------hide game screen");
+	private void respawnWeapon() {
+		currentWeapon = weaponFactory.create();
+		currentWeapon.setPosition(WIDTH / 2 - currentWeapon.getCenterX(), 150 - currentWeapon.getCenterY());
+		weaponGroup.addActor(currentWeapon);
 	}
+
 
 	@Override
 	public void dispose() {
-		System.out.println("-------------------dispose game screen");
 		stage.dispose();
+	}
+
+	@Override
+	public void hide() {
 	}
 
 	@Override
