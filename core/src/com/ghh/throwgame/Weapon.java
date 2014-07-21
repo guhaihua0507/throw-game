@@ -6,9 +6,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -22,8 +23,8 @@ public class Weapon extends Actor {
 	private AssetManager	assetManager;
 	private String			assetName;
 
-	private float			eventWidth	= 100f;
-	private float			eventHeight	= 100f;
+	private float			eventWidth	= 150f;
+	private float			eventHeight	= 150f;
 
 	private float			width		= 60f;
 	private float			height		= 60f;
@@ -31,6 +32,7 @@ public class Weapon extends Actor {
 	private float			speedx		= 0f;
 	private float			speedy		= 0f;
 
+	private boolean			isReady		= false;
 	private WeaponState		state		= WeaponState.idle;
 	private float			stateTime	= 0;
 	private TextureRegion	currentFrame;
@@ -70,7 +72,7 @@ public class Weapon extends Actor {
 		this.addListener(new ActorGestureListener() {
 			@Override
 			public void fling(InputEvent event, float velocityX, float velocityY, int button) {
-				if (state == WeaponState.idle) {
+				if (Weapon.this.isLoaded()) {
 					float centerX = getCenterX();
 					float centerY = getCenterY();
 					setWidth(width);
@@ -81,6 +83,15 @@ public class Weapon extends Actor {
 				}
 			}
 		});
+		
+		this.setScale(0);
+		this.addAction(Actions.sequence(Actions.scaleTo(1.0f, 1.0f, 0.15f), new Action() {
+			@Override
+			public boolean act(float delta) {
+				isReady = true;
+				return true;
+			}
+		}));
 	}
 
 	private void update() {
@@ -134,7 +145,7 @@ public class Weapon extends Actor {
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		batch.setColor(batch.getColor().a, batch.getColor().g, batch.getColor().b, this.getColor().a);
-		batch.draw(currentFrame, this.getX(), this.getY(), this.getCenterX(), this.getCenterY(), width, height, getScaleX(), getScaleY(), 0f);
+		batch.draw(currentFrame, getCenterX() - width/2, getCenterY() - height/2, width / 2, height / 2, width, height, getScaleX(), getScaleY(), 0f);
 	}
 
 	private void setSpeed(float speedx, float speedy) {
@@ -158,6 +169,10 @@ public class Weapon extends Actor {
 		return destroyingAnimation.getKeyFrame(stateTime);
 	}
 
+	public boolean isLoaded() {
+		return isReady && state == WeaponState.idle;
+	}
+	
 	public boolean isDestroyed() {
 		return isDestroyed;
 	}
