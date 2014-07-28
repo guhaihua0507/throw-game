@@ -6,7 +6,7 @@ import com.badlogic.gdx.assets.AssetManager;
 
 public class WeaponFactory {
 	private String[]		assets	= { "w/w1.png", "w/w2.png", "w/w3.png" };
-	private float[]			power	= { 15, 20, 30 };
+	private float[]			power	= { 30, 40, 50 };
 
 	private AssetManager	assetManager;
 	private Random			random	= new Random();
